@@ -67,3 +67,53 @@ class Nutriente {
     scanner.close();
 }
 }
+
+
+Lista de películas por año de lanzamiento:
+
+import java.util.Scanner;
+
+public class OrdenarPeliculas {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("¿Cuántas películas desea ingresar?: ");
+        int n = scanner.nextInt();
+        scanner.nextLine();
+        
+        String[][] peliculas = new String[n][3];
+
+        for (int i = 0; i < n; i++) {
+            System.out.println("\n Película #" + (i + 1));
+            System.out.print("Título: ");
+            peliculas[i][0] = scanner.nextLine();
+
+            System.out.print("Año de lanzamiento: ");
+            peliculas[i][1] = scanner.nextLine();
+
+            System.out.print("Género: ");
+            peliculas[i][2] = scanner.nextLine();
+        }
+
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - 1 - i; j++) {
+                int anio1 = Integer.parseInt(peliculas[j][1]);
+                int anio2 = Integer.parseInt(peliculas[j + 1][1]);
+                if (anio1 > anio2) {
+                    
+                    String[] temp = peliculas[j];
+                    peliculas[j] = peliculas[j + 1];
+                    peliculas[j + 1] = temp;
+                }
+            }
+        }
+
+        
+        System.out.println("\n Películas ordenadas por año de lanzamiento:");
+        for (int i = 0; i < n; i++) {
+            System.out.println(peliculas[i][1] + " - " + peliculas[i][0] + " (" + peliculas[i][2] + ")");
+        }
+
+        scanner.close();
+    }
+}
