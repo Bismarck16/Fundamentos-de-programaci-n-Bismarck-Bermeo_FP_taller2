@@ -1,117 +1,104 @@
-import java.util.*;
+import java.io.*;
+import java.util.ArrayList;
+import javax.swing.*;
 
-class Nutriente {
-    String grupo;
-    double gramos;
+class Factura {
+    private String numero;
+    private String cliente;
+    private double monto;
 
-  public static void main(String[] args) {
-
-    double totalGrasas = 0;
-    double totalCalorias = 0;
-    double totalProteinas = 0;
-    double totalCarbohidratos = 0;
-    double totalVegetales =0;
-    
-    Scanner scanner = new Scanner(System.in);
-
-    System.out.print("Ingrese la cantidad de ingredientes: ");
-    int cantidadIngredientes = scanner.nextInt();
-
-    for (int i = 1; i <= cantidadIngredientes; i++) {
-        System.out.println("\nIngrediente " + i);
-
-        System.out.print("Ingrese el tipo de nutriente (proteina, grasa, carbohidrato, Vegetales): ");
-        String tipo = scanner.next().toLowerCase();
-
-        System.out.print("Ingrese la cantidad en gramos consumidos: ");
-        double gramos = scanner.nextDouble();
-
-        switch (tipo) {
-            
-            case "proteina":
-                totalProteinas += gramos;
-                totalCalorias += gramos * 4;
-                break;
-            case "grasa":
-                totalGrasas += gramos;
-                totalCalorias += gramos * 9;
-                break;
-            case "carbohidrato":
-                totalCarbohidratos += gramos;
-                totalCalorias += gramos * 4;
-            case "vegetales":
-                totalVegetales += gramos;
-                totalCalorias += gramos *4;
-                break;
-            default:
-                System.out.println("Tipo no válido. Intente nuevamente.");
-                i--; 
-                break;
-        }
+    public Factura(String numero, String cliente, double monto) {
+        this.numero = numero;
+        this.cliente = cliente;
+        this.monto = monto;
     }
 
-    System.out.println("\n--- Resumen Nutricional ---");
-    System.out.println("Calorías: " + (int) totalCalorias + " kcal");
-    System.out.println("Proteínas: " + (int) totalProteinas + " g");
-    System.out.println("Grasas: " + (int) totalGrasas + " g");
-    System.out.println("Carbohidratos: " + (int) totalCarbohidratos + " g");
-    System.out.println("Vegetales: " + (int) totalVegetales + "g");
-
-    
-    if (totalCalorias <= 2000) {
-        System.out.println("Valor nutricional: ACEPTABLE");
-    } else {
-        System.out.println("Valor nutricional: NO ACEPTABLE (Exceso de calorías)");
+    public String getNumero() {
+        return numero;
     }
 
-    scanner.close();
+    public String getCliente() {
+        return cliente;
+    }
+
+    public double getMonto() {
+        return monto;
+    }
+
+    @Override
+    public String toString() {
+        return "Factura N°: " + numero + ", Cliente: " + cliente + ", Monto: $" + monto;
+    }
 }
-}
 
+public class SistemaFacturas {
+    private static ArrayList<Factura> facturas = new ArrayList<>();
 
-Lista de películas por año de lanzamiento:
-
-import java.util.Scanner;
-
-public class SistemaAlimentacionYPeliculas {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        int opcion;
+        do {
+            String menu = """
+                    MENÚ DE FACTURAS
+                    1. Registrar factura
+                    2. Consulta específica de una factura
+                    3. Mostrar facturas en archivo de texto
+                    4. Salir
+                    Elija una opción:
+                    """;
 
-        System.out.print("¿Cuántas películas desea ingresar?: ");
-        int n = scanner.nextInt();
-        scanner.nextLine(); 
+            opcion = Integer.parseInt(JOptionPane.showInputDialog(menu));
 
-        String[][] peliculas = new String[n][3];
+            switch (opcion) {
+                case 1 -> registrarFactura();
+                case 2 -> consultarFactura();
+                case 3 -> guardarFacturasEnArchivo();
+                case 4 -> JOptionPane.showMessageDialog(null, "Saliendo del sistema...");
+                default -> JOptionPane.showMessageDialog(null, "Opción no válida.");
+            }
+        } while (opcion != 4);
+    }
 
-        for (int i = 0; i < n; i++) {
-            System.out.println("\nPelícula #" + (i + 1));
-            System.out.print("Título: ");
-            peliculas[i][0] = scanner.nextLine();
+    private static void registrarFactura() {
+        try {
+            String numero = JOptionPane.showInputDialog("Ingrese número de factura:");
+            String cliente = JOptionPane.showInputDialog("Ingrese nombre del cliente:");
+            double monto = Double.parseDouble(JOptionPane.showInputDialog("Ingrese monto de la factura:"));
 
-            System.out.print("Año de lanzamiento: ");
-            peliculas[i][1] = scanner.nextLine();
-
-            System.out.print("Género: ");
-            peliculas[i][2] = scanner.nextLine();
+            facturas.add(new Factura(numero, cliente, monto));
+            JOptionPane.showMessageDialog(null, "Factura registrada exitosamente.");
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Error: El monto debe ser un número válido.");
+        } catch (NullPointerException e) {
+            JOptionPane.showMessageDialog(null, "Error: Debe ingresar todos los datos.");
         }
+    }
 
-        for (int i = 0; i < n - 1; i++) {
-            for (int j = 0; j < n - 1 - i; j++) {
-                int anio1 = Integer.parseInt(peliculas[j][1]);
-                int anio2 = Integer.parseInt(peliculas[j + 1][1]);
-                if (anio1 > anio2) {
-                    String[] temp = peliculas[j];
-                    peliculas[j] = peliculas[j + 1];
-                    peliculas[j + 1] = temp;
-                }
+    private static void consultarFactura() {
+        String numero = JOptionPane.showInputDialog("Ingrese número de factura a consultar:");
+        boolean encontrada = false;
+
+        for (Factura f : facturas) {
+            if (f.getNumero().equals(numero)) {
+                JOptionPane.showMessageDialog(null, f.toString());
+                encontrada = true;
+                break;
             }
         }
 
-        System.out.println("\nPelículas ordenadas por año de lanzamiento:");
-        for (int i = 0; i < n; i++) {
-            System.out.println(peliculas[i][1] + " - " + peliculas[i][0] + " (" + peliculas[i][2] + ")");
+        if (!encontrada) {
+            JOptionPane.showMessageDialog(null, "Factura no se encuentra registrada.");
         }
+    }
 
-        scanner.close();
+    private static void guardarFacturasEnArchivo() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("facturas.txt"))) {
+            for (Factura f : facturas) {
+                writer.write(f.toString());
+                writer.newLine();
+            }
+            JOptionPane.showMessageDialog(null, "Facturas guardadas en facturas.txt");
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error al guardar las facturas en el archivo.");
+        }
     }
 }
